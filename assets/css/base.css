@@ -1,0 +1,151 @@
+/* =====================================================================
+   HIMACAKE Photobooth - Base Reset & Typography (standalone)
+   Hỗ trợ mọi thiết bị: desktop, mobile, tablet, mọi DPI/retina.
+   ===================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  font-size:100%;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  /* Ngăn iOS phóng to font tự động khi xoay ngang */
+  -moz-text-size-adjust:100%;
+  /* Cho scroll mượt trên iOS */
+  -webkit-overflow-scrolling:touch;
+  /* Tắt pull-to-refresh trên Chrome Android khi không cần */
+  overscroll-behavior-y:contain;
+}
+
+body{
+  margin:0;
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:1.55;
+  color:var(--color-text);
+  background:var(--color-bg);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  /* Chống zoom khi double-tap trên mobile */
+  touch-action:manipulation;
+  /* Tắt context menu khi long-press trên ảnh/canvas */
+  -webkit-touch-callout:none;
+}
+
+h1,h2,h3,h4,h5,h6{
+  font-family:var(--font-heading);
+  font-weight:700;
+  margin:0 0 var(--sp-3) 0;
+  color:var(--color-text);
+  line-height:1.25;
+}
+
+/* Fluid headings — ổn định phone → desktop */
+h1{font-size:clamp(1.5rem, calc(1.05rem + 1.4vw), var(--fs-32))}
+h2{font-size:clamp(1.35rem, calc(0.95rem + 1.05vw), var(--fs-28))}
+h3{font-size:clamp(1.2rem, calc(0.88rem + 0.82vw), var(--fs-24))}
+h4{font-size:clamp(1.1rem, calc(0.85rem + 0.62vw), var(--fs-20))}
+h5{font-size:var(--fs-18)}
+h6{font-size:var(--fs-16)}
+p{margin:0 0 var(--sp-3) 0}
+a{color:var(--color-secondary);text-decoration:none;transition:color var(--t-fast)}
+a:hover{color:var(--color-primary-dark)}
+img{max-width:100%;height:auto;display:block}
+ul,ol{margin:0;padding:0;list-style:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* Touch target — tối thiểu 44×44 CSS px (Apple HIG / Google Material) */
+button,
+[role="button"],
+input[type="range"]{
+  min-height:44px;
+  min-width:44px;
+}
+
+/* Range slider — cải thiện trên mobile */
+input[type="range"]{
+  -webkit-appearance:none;
+  appearance:none;
+  height:6px;
+  border-radius:3px;
+  background:var(--color-border);
+  outline:none;
+  touch-action:pan-x;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:var(--color-primary);
+  border:2px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  cursor:pointer;
+}
+input[type="range"]::-moz-range-thumb{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:var(--color-primary);
+  border:2px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  cursor:pointer;
+}
+
+/* Canvas — image-rendering sắc nét trên retina */
+canvas{
+  image-rendering:-webkit-optimize-contrast;
+  image-rendering:crisp-edges;
+}
+
+/* Video — mượt trên mọi thiết bị */
+video{
+  object-fit:cover;
+  background:#000;
+}
+
+.text-soft{color:var(--color-text-soft)}
+.hidden{display:none !important}
+
+/* ====== DPI-aware utilities ====== */
+/* High-DPI: nét hơn cho border 1px (retina 2x+) */
+@media (-webkit-min-device-pixel-ratio:2),(min-resolution:192dpi){
+  :root{
+    --border-thin:0.5px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio:3),(min-resolution:288dpi){
+  :root{
+    --border-thin:0.333px;
+  }
+}
+
+/* ====== Orientation / Foldable ====== */
+@media (orientation:landscape) and (max-height:500px){
+  /* Điện thoại nằm ngang — thu gọn padding */
+  :root{
+    --sp-4:12px;
+    --sp-5:16px;
+    --sp-6:20px;
+  }
+}
+
+/* Samsung Galaxy Fold / foldable */
+@media (max-width:280px){
+  :root{
+    --fs-body:0.875rem;
+    --sp-3:8px;
+    --sp-4:12px;
+  }
+}
+
+/* Hover media query — phân biệt thiết bị có chuột vs touch-only */
+@media (hover:none) and (pointer:coarse){
+  /* Touch-only: tăng kích thước target */
+  button,
+  [role="button"]{
+    min-height:48px;
+  }
+}

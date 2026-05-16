@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>HIMACAKE Photobooth</title>
+  <meta name="description" content="Chụp ảnh Photobooth — bộ lọc, khung ghép, đổi camera. Chỉ trên trình duyệt.">
+  <meta name="theme-color" content="#F4B41A">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- PWA / Mobile Web App -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HIMACAKE Photobooth">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="HIMACAKE Photobooth">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="HIMACAKE Photobooth">
+  <meta property="og:description" content="Chụp ảnh Photobooth — bộ lọc, khung ghép, đổi camera. Chỉ trên trình duyệt.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/himacakev2.png">
+
+  <!-- Google Fonts — Quicksand + Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="assets/img/himacakev2.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/himacakev2.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/photo-booth.css">
+</head>
+<body class="photo-booth-page">
+
+<section class="page-photo-booth" id="pb-page"
+  data-pb-template="assets/img/IMG_4361.png"
+  data-pb-logo="assets/img/himacakev2.png"
+  data-pb-logo-fallback="assets/img/himacake.png"
+  data-pb-layout-thumb-r1000x3000="assets/img/11111.png"
+  data-pb-layout-thumb-r1400x2000="assets/img/2222.png"
+  data-pb-layout-thumb-r1500x2260="assets/img/3333.png">
+  <div class="pb-wrap">
+    <header class="pb-intro">
+      <div class="pb-brand">
+        <h1 class="pb-brand__title">
+          <a class="pb-brand__home" href="./" title="Về trang chủ" aria-label="Về trang chủ HIMACAKE">
+            <img class="pb-brand__logo" src="assets/img/himacakev2.png" width="52" height="52" alt=""
+                 decoding="async" fetchpriority="high"
+                 onerror="this.onerror=null;this.src='assets/img/himacake.png'">
+            <span class="pb-brand__name">HIMACAKE</span>
+          </a>
+          <span class="pb-brand__product">Photobooth</span>
+        </h1>
+      </div>
+    </header>
+
+    <!-- Giai đoạn chụp: camera + film strip (4 ảnh) -->
+    <div id="pb-capture-phase">
+      <div class="pb-shell">
+        <div class="pb-top">
+          <div class="pb-timers" role="group" aria-label="Hẹn giờ chụp">
+            <button type="button" class="pb-chip" data-timer="3" aria-pressed="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l3.5 2"/></svg>
+              3s
+            </button>
+            <button type="button" class="pb-chip" data-timer="5" aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l3.5 2"/></svg>
+              5s
+            </button>
+            <button type="button" class="pb-chip" data-timer="10" aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l3.5 2"/></svg>
+              10s
+            </button>
+          </div>
+          <div class="pb-top-actions">
+            <button type="button" class="pb-resume-cam" id="pb-resume-camera" hidden>Bật camera</button>
+          </div>
+        </div>
+
+        <div class="pb-stage">
+          <div class="pb-rail" role="toolbar" aria-label="Công cụ" aria-live="polite">
+            <div class="pb-rail-col">
+              <button type="button" class="pb-tool" data-open-tool="grid" aria-pressed="false" title="Khung lưới">
+                <svg class="pb-tool__ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="16" rx="1"/><rect x="14" y="4" width="6" height="5" rx="1"/><rect x="14" y="11" width="6" height="5" rx="1"/><rect x="14" y="18" width="6" height="2" rx="0.5"/></svg>
+                Khung lưới
+              </button>
+              <p class="pb-rail-note" id="pb-sum-grid">1000×3000</p>
+            </div>
+            <div class="pb-rail-col">
+              <button type="button" class="pb-tool" data-open-tool="filter" aria-pressed="false" title="Bộ lọc">
+                <svg class="pb-tool__ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><circle cx="7" cy="17" r="4"/><circle cx="17" cy="17" r="4"/></svg>
+                Bộ lọc
+              </button>
+              <p class="pb-rail-note" id="pb-sum-filter">Tự nhiên</p>
+            </div>
+            <div class="pb-rail-col">
+              <button type="button" class="pb-tool" data-open-tool="light" aria-pressed="false" title="Phát sáng">
+                <svg class="pb-tool__ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 1.5v2.5M12 20v2.5M3.5 12h2.5M18 12h2.5M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/></svg>
+                Phát sáng
+              </button>
+              <p class="pb-rail-note" id="pb-sum-light">Trắng</p>
+            </div>
+          </div>
+
+          <div class="pb-capture-main">
+            <div class="pb-preview-row">
+              <div class="pb-preview">
+                <button type="button" class="pb-flip" id="pb-flip-camera" aria-label="Đổi camera trước và sau">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10 3h4l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3.5L10 3z"/>
+                    <circle cx="12" cy="13" r="3"/>
+                    <path d="M17 9.5 19 7.5V11h-3.5"/>
+                    <path d="M7 14.5 5 16.5V13h3.5"/>
+                  </svg>
+                  <span class="pb-flip__label">Đổi cam</span>
+                </button>
+                <div class="pb-preview__inner">
+                  <video id="pb-video" playsinline webkit-playsinline autoplay muted></video>
+                  <img id="pb-static" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Ảnh tải lên">
+                </div>
+                <div id="pb-msg" class="pb-msg" hidden></div>
+                <div id="pb-countdown" class="pb-countdown" hidden>3</div>
+                <div id="pb-progress" class="pb-progress" hidden>Đang chụp…</div>
+              </div>
+              <div id="pb-filmstrip" class="pb-filmstrip" hidden role="list" aria-label="Ảnh đã chụp trong phiên"></div>
+              <div class="pb-action">
+                <button type="button" class="pb-capture">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Bắt đầu chụp
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sau khi chụp đủ 4 ảnh: màu khung / nền họa tiết, logo+chữ luôn ở chân -->
+    <div id="pb-editor-phase" class="pb-editor-phase" hidden>
+      <div class="pb-editor-shell">
+        <div class="pb-editor-layout">
+          <div class="pb-editor-preview">
+            <canvas id="pb-editor-canvas" class="pb-editor-canvas" width="400" height="600" aria-label="Xem trước ảnh ghép"></canvas>
+          </div>
+          <div class="pb-editor-side">
+            <h2 class="pb-editor-side__title">Hoàn thiện ảnh</h2>
+            <p class="text-soft pb-editor-hint">Chọn màu khung (nền khi tắt HIMA), hoặc bật nền HIMA. Logo và chữ HIMACAKE luôn hiển thị ở dưới ảnh.</p>
+
+            <div class="pb-editor-block">
+              <h3 class="pb-editor-label">Màu khung</h3>
+              <div id="pb-frame-swatches" class="pb-frame-swatches"></div>
+            </div>
+
+            <div class="pb-editor-block">
+              <h3 class="pb-editor-label">Nền sticker</h3>
+              <button type="button" class="pb-sticker-btn" id="pb-bg-pattern-toggle" aria-pressed="false"
+                      title="Bật nền HIMA (họa tiết). Tắt = chỉ dùng màu khung">
+                <img class="pb-bg-pattern-thumb" src="assets/img/IMG_4361.png" width="44" height="44" alt=""
+                     loading="lazy" decoding="async">
+                <span>HIMA</span>
+              </button>
+            </div>
+
+            <div class="pb-editor-actions">
+              <button type="button" class="pb-download" id="pb-download-btn">Tải xuống</button>
+              <button type="button" class="pb-retake" id="pb-retake-btn">Chụp lại</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pb-modal" class="pb-modal" hidden aria-modal="true" role="dialog" aria-label="Tuỳ chỉnh HIMACAKE Photobooth">
+    <div class="pb-modal__backdrop"></div>
+    <div class="pb-modal__dialog">
+      <div class="pb-modal__side" role="tablist">
+        <button type="button" class="pb-modal__tab" data-tab="grid" aria-selected="true">
+          <svg class="pb-modal__ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="5" height="18" rx="1"/><rect x="13" y="3" width="6" height="5" rx="1"/><rect x="13" y="10" width="6" height="5" rx="1"/><rect x="13" y="17" width="6" height="4" rx="0.5"/></svg>
+          Khung lưới
+        </button>
+        <button type="button" class="pb-modal__tab" data-tab="filter" aria-selected="false">
+          <svg class="pb-modal__ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/></svg>
+          Bộ lọc
+        </button>
+        <button type="button" class="pb-modal__tab" data-tab="light" aria-selected="false">
+          <svg class="pb-modal__ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 1.5v2.5M12 20v2.5M3.5 12h2.5M18 12h2.5M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M5.5 18.5l1.8-1.8M16.7 7.3l1.8-1.8"/></svg>
+          Phát sáng
+        </button>
+      </div>
+      <div class="pb-modal__main">
+        <div class="pb-modal__head">
+          <h2 id="pb-modal-title">Khung lưới</h2>
+          <button type="button" class="pb-modal__close" aria-label="Đóng">×</button>
+        </div>
+        <div class="pb-modal__body">
+          <div data-panel="grid">
+            <p class="text-soft" style="margin-top:0;margin-bottom:var(--sp-4);font-size:var(--fs-14);">Chọn cách ghép ảnh (mỗi ô sẽ chụp một lần theo hẹn giờ).</p>
+            <div id="pb-layout-grid" class="pb-layout-grid"></div>
+          </div>
+          <div data-panel="filter" hidden>
+            <p class="text-soft" style="margin-top:0;margin-bottom:var(--sp-4);font-size:var(--fs-14);">Bộ lọc dịu, ấm — hợp chụp chân dung / selfie. Áp dụng lên khung xem trước và ảnh tải về. Kéo thanh cường độ để tăng/giảm mạnh hiệu ứng (100% = mặc định, tối đa 300%).</p>
+            <div id="pb-filter-grid" class="pb-filter-grid"></div>
+            <div id="pb-filter-strength-wrap" class="pb-filter-strength" hidden>
+              <label class="pb-filter-strength__label" for="pb-filter-range">Cường độ bộ lọc</label>
+              <div class="pb-light-row pb-filter-strength__row">
+                <input type="range" id="pb-filter-range" min="0" max="300" value="100" step="5" aria-valuemin="0" aria-valuemax="300" aria-label="Cường độ bộ lọc">
+                <output id="pb-filter-out" for="pb-filter-range">100%</output>
+              </div>
+            </div>
+          </div>
+          <div data-panel="light" hidden>
+            <div class="pb-light-panel">
+              <p class="text-soft" style="margin-top:0;margin-bottom:var(--sp-3);font-size:var(--fs-14);">Chọn sắc nền quanh khung chụp. Ô sáng mịn = nền studio mặc định; ô cầu vồng mở bảng màu tuỳ chỉnh. Kéo thanh để tăng / giảm độ mạnh.</p>
+              <div id="pb-swatches" class="pb-swatches"></div>
+              <div class="pb-light-row">
+                <input type="range" id="pb-light-range" min="0" max="100" value="100">
+                <output id="pb-light-out" for="pb-light-range">100%</output>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="assets/js/photo-booth.js" defer></script>
+
+</body>
+</html>
