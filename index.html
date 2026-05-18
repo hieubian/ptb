@@ -298,8 +298,10 @@
     <div id="cornetto-backdrop"></div>
     <div id="cornetto-card">
       <button id="cornetto-close" aria-label="Đóng">×</button>
-      <img src="assets/img/cornettook.png" alt="Cornetto" id="cornetto-img">
-      <p id="cornetto-text">You là Cornetto 🍦</p>
+      <a href="https://www.youtube.com/watch?v=OJgQGJuihtA" target="_blank" rel="noopener" id="cornetto-img-link" aria-label="Xem video Cornetto">
+        <img src="assets/img/cornettook.png" alt="Cornetto" id="cornetto-img">
+      </a>
+      <p id="cornetto-text">You là Cornetto 🌻</p>
     </div>
   </div>
 
@@ -397,6 +399,12 @@
     }
     #cornetto-close:hover { background: #e0e0e0; color: #333; }
 
+    #cornetto-img-link {
+      display: block;
+      line-height: 0;
+      border-radius: 50%;
+      -webkit-tap-highlight-color: transparent;
+    }
     #cornetto-img {
       width: 160px;
       height: 160px;
@@ -404,6 +412,12 @@
       display: block;
       filter: drop-shadow(0 8px 20px rgba(0,90,200,.15));
       animation: cornetto-bounce 2.4s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform .15s ease, filter .15s ease;
+    }
+    #cornetto-img-link:hover #cornetto-img,
+    #cornetto-img-link:active #cornetto-img {
+      filter: drop-shadow(0 10px 24px rgba(0,90,200,.28));
     }
     @keyframes cornetto-bounce {
       0%, 100% { transform: translateY(0) rotate(-4deg); }
