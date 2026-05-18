@@ -639,8 +639,16 @@
     return out;
   }
 
-  function triggerDownload(canvas) {
+  function triggerDownload(canvas, onComplete) {
+    var toast = document.getElementById('pb-dl-toast');
+    if (toast) toast.classList.add('is-visible');
+
     var filename = 'himacake-photobooth-' + Date.now() + '.png';
+
+    function finish() {
+      if (toast) toast.classList.remove('is-visible');
+      if (onComplete) onComplete();
+    }
 
     function fallbackDownload(blob) {
       var url = URL.createObjectURL(blob);
@@ -653,39 +661,42 @@
       setTimeout(function () {
         URL.revokeObjectURL(url);
       }, 100);
+      finish();
     }
 
-    try {
-      canvas.toBlob(function (blob) {
-        if (!blob) return;
+    // timeout để UI render toast trước khi toBlob chặn luồng chính
+    setTimeout(function() {
+      try {
+        canvas.toBlob(function (blob) {
+          if (!blob) { finish(); return; }
 
-        if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
-          try {
-            var file = new File([blob], filename, { type: 'image/png' });
-            if (navigator.canShare({ files: [file] })) {
-              navigator.share({
-                files: [file],
-                title: 'HIMACAKE Photobooth'
-              }).then(function () {
-                // Share successful (user picked an action like "Save Image")
-              }).catch(function (error) {
-                // If user didn't cancel manually, try fallback
-                if (error && error.name !== 'AbortError') {
-                  fallbackDownload(blob);
-                }
-              });
-              return;
+          if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
+            try {
+              var file = new File([blob], filename, { type: 'image/png' });
+              if (navigator.canShare({ files: [file] })) {
+                // Tắt toast ngay trước khi mở native OS sheet
+                finish();
+                navigator.share({
+                  files: [file],
+                  title: 'HIMACAKE Photobooth'
+                }).then(function () {
+                }).catch(function (error) {
+                  if (error && error.name !== 'AbortError') {
+                    fallbackDownload(blob);
+                  }
+                });
+                return;
+              }
+            } catch (err) {
             }
-          } catch (err) {
-            // File constructor or canShare failed
           }
-        }
-        
-        fallbackDownload(blob);
-      }, 'image/png');
-    } catch (e) {
-      // Ignore
-    }
+          
+          fallbackDownload(blob);
+        }, 'image/png');
+      } catch (e) {
+        finish();
+      }
+    }, 50);
   }
 
   /**
