@@ -642,30 +642,29 @@
   function triggerDownload(canvas) {
     var filename = 'himacake-photobooth-' + Date.now() + '.png';
 
-    function fallbackDownload(blob) {
-      var url = URL.createObjectURL(blob);
+    function fallback(cvs, fname) {
+      // Dùng Data URL thay vì Blob URL để tương thích 100% với các trình duyệt in-app (Zalo, Facebook) và Xiaomi Browser.
+      var dataUrl = cvs.toDataURL('image/png');
       var a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
+      a.href = dataUrl;
+      a.download = fname;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(function () {
-        URL.revokeObjectURL(url);
-      }, 100);
     }
 
-    try {
-      canvas.toBlob(function (blob) {
-        if (!blob) return;
-
-        // Phát hiện hệ điều hành thông minh
-        var ua = navigator.userAgent || navigator.vendor || window.opera;
-        var isIOS = /iPad|iPhone|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        
-        // iOS: Web Share API là chuẩn mực để có nút "Save Image" lưu thẳng vào Album ảnh.
-        // Android/Desktop: a.download là chuẩn mực để gọi Download Manager gốc của máy, cực kỳ mượt và báo noti tải xong.
-        if (isIOS && navigator.share && navigator.canShare && typeof File !== 'undefined') {
+    // Phát hiện hệ điều hành thông minh
+    var ua = navigator.userAgent || navigator.vendor || window.opera;
+    var isIOS = /iPad|iPhone|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    // iOS: Web Share API là chuẩn mực để có nút "Save Image" lưu thẳng vào Album ảnh.
+    if (isIOS && navigator.share && navigator.canShare && typeof File !== 'undefined') {
+      try {
+        canvas.toBlob(function (blob) {
+          if (!blob) {
+            fallback(canvas, filename);
+            return;
+          }
           try {
             var file = new File([blob], filename, { type: 'image/png' });
             if (navigator.canShare({ files: [file] })) {
@@ -674,21 +673,21 @@
                 title: 'HIMACAKE Photobooth'
               }).catch(function (error) {
                 if (error && error.name !== 'AbortError') {
-                  fallbackDownload(blob);
+                  fallback(canvas, filename);
                 }
               });
               return;
             }
           } catch (err) {
-            // Ignore Web Share errors
+            fallback(canvas, filename);
           }
-        }
-        
-        // Mặc định cho Android và Desktop: Tải xuống trực tiếp
-        fallbackDownload(blob);
-      }, 'image/png');
-    } catch (e) {
-      // Ignore
+        }, 'image/png');
+      } catch (e) {
+        fallback(canvas, filename);
+      }
+    } else {
+      // Android / PC: Trực tiếp tải xuống không qua bảng Share, cực mượt và chuẩn xác.
+      fallback(canvas, filename);
     }
   }
 
