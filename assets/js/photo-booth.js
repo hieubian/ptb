@@ -1040,26 +1040,31 @@
           customOn;
 
         if (col === 'custom') {
-          var lab = document.createElement('label');
-          lab.className = 'pb-swatch-wrap pb-swatch-wrap--label' + (active ? ' pb-swatch--active' : '');
-          lab.title = 'Chọn màu tuỳ chỉnh';
+          /* Dùng y hệt class của frame color picker — đảm bảo tròn mọi thiết bị */
+          var wrap = document.createElement('label');
+          wrap.className = 'pb-frame-color-wrap' + (active ? ' pb-frame-color-wrap--active' : '');
+          wrap.title = 'Chọn màu tuỳ chỉnh phát sáng';
+          wrap.setAttribute('aria-label', 'Chọn màu tuỳ chỉnh phát sáng');
+          wrap.setAttribute('role', 'button');
+
+          var face = document.createElement('span');
+          face.className = 'pb-frame-color-face';
+          face.setAttribute('aria-hidden', 'true');
 
           var inp = document.createElement('input');
           inp.type = 'color';
-          inp.className = 'pb-swatch-color-embed';
-          try {
-            inp.value = colorPickerHexValue();
-          } catch (e1) {}
+          inp.className = 'pb-frame-color-input';
           inp.setAttribute('aria-label', 'Chọn màu tuỳ chỉnh phát sáng');
+          try { inp.value = colorPickerHexValue(); } catch (e1) {}
 
-          var face = document.createElement('span');
-          face.className = 'pb-swatch pb-swatch--custom';
-          face.setAttribute('aria-hidden', 'true');
-
-          lab.appendChild(inp);
-          lab.appendChild(face);
           inp.addEventListener('input', function () {
             lightColor = inp.value;
+            /* Cập nhật viền active */
+            var allWraps = row.querySelectorAll('.pb-frame-color-wrap');
+            allWraps.forEach(function(w){ w.classList.add('pb-frame-color-wrap--active'); });
+            row.querySelectorAll('.pb-swatch').forEach(function(s){
+              s.setAttribute('aria-pressed', 'false');
+            });
             refreshOuterGlow();
           });
           inp.addEventListener('change', function () {
@@ -1067,7 +1072,10 @@
             renderSwatches();
             refreshOuterGlow();
           });
-          row.appendChild(lab);
+
+          wrap.appendChild(face);
+          wrap.appendChild(inp);
+          row.appendChild(wrap);
           return;
         }
 
