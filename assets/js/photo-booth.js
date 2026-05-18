@@ -1180,12 +1180,18 @@
       if (editorPhase) editorPhase.hidden = true;
       if (capturePhase) capturePhase.hidden = false;
       rebuildFilmstrip();
+      /* Đã từng cấp → hiện chờ nhẹ thay vì trống trơn */
+      var wasPreviouslyGranted = false;
+      try { wasPreviouslyGranted = localStorage.getItem('pb_cam_granted') === '1'; } catch(e) {}
+      if (wasPreviouslyGranted) showMsg('Đang kết nối camera…');
       startCamera()
         .then(function () {
+          try { localStorage.setItem('pb_cam_granted', '1'); } catch(e) {}
           showMsg('');
           updateCameraChrome();
         })
         .catch(function () {
+          try { localStorage.removeItem('pb_cam_granted'); } catch(e) {}
           updateCameraChrome();
           showMsg(
             'Không mở được camera. iPhone: Cài đặt → Safari → Camera → Cho phép cho trang web. Android: nhấn biểu tượng khóa thanh địa chỉ → Quyền → Camera. Sau đó nhấn Bật camera.'
@@ -1577,17 +1583,88 @@
     }
 
     updateCameraChrome();
-    startCamera()
-      .then(function () {
+
+    /**
+     * Khởi động camera thông minh — dùng Permissions API nếu có:
+     *   - 'granted'  → start thầm lặng (thiết bị đã nhớ quyền)
+     *   - 'prompt'   → thử start (desktop OK); mobile có thể cần tap nút
+     *   - 'denied'   → chỉ hiện hướng dẫn, không gọi getUserMedia vô ích
+     * localStorage 'pb_cam_granted' = '1' giúp tránh hiện thông báo lỗi
+     * trong khoảnh khắc browser đang xử lý quyền đã được ghi nhớ.
+     */
+    function bootCamera() {
+      var wasPreviouslyGranted = false;
+      try { wasPreviouslyGranted = localStorage.getItem('pb_cam_granted') === '1'; } catch(e) {}
+
+      function onSuccess() {
+        try { localStorage.setItem('pb_cam_granted', '1'); } catch(e) {}
         showMsg('');
         updateCameraChrome();
-      })
-      .catch(function () {
+      }
+
+      function onFail() {
+        try { localStorage.removeItem('pb_cam_granted'); } catch(e) {}
         updateCameraChrome();
         showMsg(
           'Không mở được camera. iPhone: Cài đặt → Safari → Camera → Cho phép cho trang web. Android: nhấn biểu tượng khóa thanh địa chỉ → Quyền → Camera. Sau đó nhấn Bật camera.'
         );
-      });
+      }
+
+      /* Đã từng cấp quyền → hiện thông báo chờ nhẹ thay vì thông báo lỗi ngay */
+      if (wasPreviouslyGranted) {
+        showMsg('Đang kết nối camera…');
+      }
+
+      /* Dùng Permissions API nếu browser hỗ trợ */
+      if (navigator.permissions && typeof navigator.permissions.query === 'function') {
+        navigator.permissions.query({ name: 'camera' }).then(function (status) {
+
+          if (status.state === 'denied') {
+            /* Quyền bị từ chối hoàn toàn — không cần gọi getUserMedia */
+            try { localStorage.removeItem('pb_cam_granted'); } catch(e) {}
+            updateCameraChrome();
+            showMsg(
+              'Camera bị chặn. Vào cài đặt trình duyệt → Quyền → Camera, cho phép trang web này, rồi tải lại trang.'
+            );
+            return;
+          }
+
+          /* 'granted' hoặc 'prompt' — thử start */
+          startCamera().then(onSuccess).catch(function () {
+            if (status.state === 'granted') {
+              /* Browser báo đã cấp nhưng vẫn lỗi → thiết bị/tab bất thường */
+              onFail();
+            } else {
+              /* 'prompt' — chưa cấp quyền lần nào, hiện hướng dẫn bình thường */
+              onFail();
+            }
+          });
+
+          /* Lắng nghe khi người dùng thay đổi quyền trong lúc dùng trang */
+          status.onchange = function () {
+            if (status.state === 'granted' && !currentStream) {
+              showMsg('Đang kết nối camera…');
+              startCamera().then(onSuccess).catch(onFail);
+            } else if (status.state === 'denied') {
+              try { localStorage.removeItem('pb_cam_granted'); } catch(e) {}
+              stopCamera();
+              updateCameraChrome();
+              showMsg('Camera bị chặn. Cho phép lại trong cài đặt trình duyệt, rồi tải lại trang.');
+            }
+          };
+
+        }).catch(function () {
+          /* Permissions API không hỗ trợ query 'camera' (một số browser cũ) */
+          startCamera().then(onSuccess).catch(onFail);
+        });
+
+      } else {
+        /* Không có Permissions API — fallback trực tiếp */
+        startCamera().then(onSuccess).catch(onFail);
+      }
+    }
+
+    bootCamera();
 
     hydrateLayoutCardThumbs();
     renderLayouts();
